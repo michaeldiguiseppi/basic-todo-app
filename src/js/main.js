@@ -1,3 +1,5 @@
+var rootRef = new Firebase('https://todo-app-basic.firebaseapp.com');
+
 
 // ** globals ** //
 var seed = [
@@ -29,11 +31,19 @@ $(document).on('ready', function() {
     event.preventDefault();
     var todo = $('input').val();
     // add new Todos to the DOM
-    $('#all-todos').append('<li>'+todo+'</li>');
+    $('#all-todos').append('<li><button class="btn btn-danger btn-sm">X</button>&nbsp;'+todo+'</li>');
     // update localStorage
     seedDataToLocalStorage(todo);
     // Clear input field on submission
     $('input').val('');
+  });
+
+  $(document).on('click', 'li', function() {
+    $(this).remove();
+    var strTodo = $(this).text().replace('X', '').trim();
+    // remember to remove from local storage
+    removeTodoFromLocalStorage(strTodo);
+
   });
 });
 
@@ -41,9 +51,9 @@ $(document).on('ready', function() {
 
 function seedDataToLocalStorage(todo) {
     if (todo) {
-        var currentdata = getDataFromLocalStorage();
-        currentdata.push(todo);
-        localStorage.setItem('todos', JSON.stringify(currentdata));
+        var currentData = getDataFromLocalStorage();
+        currentData.push(todo);
+        localStorage.setItem('todos', JSON.stringify(currentData));
     }
     if (!getDataFromLocalStorage()) {
         localStorage.setItem('todos', JSON.stringify(seed));
@@ -58,6 +68,21 @@ function getDataFromLocalStorage() {
 
 function appendToDom(arr) {
     arr.forEach(function (todo) {
-        $('#all-todos').append('<li>'+todo+'</li>');
+        $('#all-todos').append('<li><button class="btn btn-danger btn-sm">X</button>&nbsp;'+todo+'</li>');
     });
+};
+
+function removeTodoFromLocalStorage(todo) {
+    /*
+    1. get data from local storage
+    2. find item in array and remove
+    3. set data to local storage
+    */
+
+    var current = getDataFromLocalStorage();
+    var startIndex = current.indexOf(todo);
+    current.splice(startIndex, 1);
+    localStorage.setItem('todos', JSON.stringify(current));
+
 }
+
